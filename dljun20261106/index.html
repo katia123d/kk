@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fbf7f2">
+<title>DL俊专属盲盒</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+
+    <!-- Home -->
+    <section class="view" id="home">
+        <header class="header">
+            <button class="sound-btn" id="soundBtn" data-action="toggle-sound" aria-label="拆盒音效开关">♫ 音效开</button>
+            <div class="eyebrow">DL JUN · SURPRISE BOX</div>
+            <h1 class="title">DL俊专属盲盒</h1>
+            <div class="mode-switch" id="modeSwitch">
+                <button class="mode-opt active" id="modeA" data-action="set-mode" data-mode="A">固定盲盒 A</button>
+                <button class="mode-opt" id="modeB" data-action="set-mode" data-mode="B">惊喜清单 B</button>
+            </div>
+            <div class="progress-row">
+                <span class="progress-text">已开启 <b id="openedCount">0</b> / <span id="totalCount">9</span></span>
+                <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+            </div>
+        </header>
+
+        <div class="grid" id="grid"></div>
+
+        <div class="footer">
+            <button class="btn edit-btn" id="editBtn" data-action="go-editor">编辑内容</button>
+            <button class="btn shuffle-btn" id="shuffleBtn" data-action="shuffle">随机打乱</button>
+            <button class="btn reset-btn" data-action="reset-boxes">重新封盒</button>
+        </div>
+        <p class="tip-line" id="tipLine">「随机打乱」会让九个盲盒全部换位置并盖上，特殊盲盒也跟着藏起来；九张封面已固定，打乱也不会变。飘字和语音可以在「编辑内容」里换。</p>
+        <p class="share-tip" id="shareTip" hidden></p>
+    </section>
+
+    <!-- Editor -->
+    <section class="view" id="editor" hidden>
+        <header class="header editor-header">
+            <button class="back-link" data-action="go-home">← 返回首页</button>
+            <h1 class="title title-small" id="editorTitle">把盲盒变成你的样子</h1>
+            <p class="desc" id="editorDesc">9 张卡，每张都能换文字，或改成「文字留空 + 一段声音」的语音盲盒；封面已固定为统一封面，不用再换。</p>
+        </header>
+
+        <div class="notice" id="noticeA">
+            <div class="notice-title">使用说明</div>
+            <div class="notice-line">· 音频：支持 mp3 / wav / m4a / aac / ogg / amr / 3gp 等，也可粘贴音频链接</div>
+            <div class="notice-line">· 本机选的音频存在这个浏览器里，换设备或清缓存会丢；外链音频不受影响</div>
+        </div>
+
+        <div class="pool-editor" id="poolEditor" hidden>
+            <div class="notice-title">清单库 · 一行一个事件</div>
+            <p class="pool-desc">体系 B 不编辑单个盲盒。每次从清单库里随机抽 9 件放进九个盒子，拆开之前谁也不知道会抽到什么；纯文字，没有音频。清单库最多 100 条。</p>
+            <textarea class="pool-input" id="poolInput" spellcheck="false" placeholder="一行写一件事…"></textarea>
+            <div class="pool-count" id="poolCount">共 0 条 / 最多 100 条</div>
+            <div class="notice pool-notice">
+                <div class="notice-line">· 至少 9 条才能抽满，最多 100 条；建议 20 条以上，重复抽才有意思</div>
+                <div class="notice-line">· 保存后会立刻重新抽一次；首页「重新抽取」也能随时换一批</div>
+                <div class="notice-line">· 清单库存在这个浏览器里；「复制分享链接」能把整套清单发给朋友，对方打开会重新随机抽 9 件</div>
+            </div>
+        </div>
+
+        <div class="editor-list" id="editorList"></div>
+
+        <div class="actions">
+            <button class="save-btn" id="saveBtn" data-action="save">保存修改</button>
+            <button class="share-btn" id="shareBtn" data-action="share">复制分享链接</button>
+            <button class="reset-btn" id="resetContentBtn" data-action="reset-content">恢复默认内容</button>
+            <p class="actions-hint" id="actionsHint">「复制分享链接」会把你写的文字、类型和排列顺序一起写进链接，朋友打开就是这一套盲盒；本机上传的音频不会跟着链接走，会回退成默认声音，封面始终是统一封面。</p>
+        </div>
+    </section>
+
+    <!-- Result overlay -->
+    <div class="overlay" id="overlay" hidden>
+        <div class="result-panel">
+            <div class="panel-top">
+                <span class="panel-label" id="resultLabel">DL俊专属 · 一份惊喜</span>
+                <div class="panel-actions">
+                    <button class="mini-move" data-action="move-box">换个位置</button>
+                    <button class="close-btn" data-action="close-result">×</button>
+                </div>
+            </div>
+
+            <div class="stage">
+                <div class="gift-glow" id="giftGlow"></div>
+                <div class="confetti-layer" id="confettiLayer"></div>
+
+                <div class="reveal" id="textReveal" hidden>
+                    <span class="reveal-text" id="revealText"></span>
+                </div>
+
+                <div class="audio-reveal" id="audioReveal" hidden>
+                    <div class="audio-tag">♫ 语音盲盒</div>
+                    <div class="wave" id="wave"></div>
+                    <button class="audio-btn" id="audioBtn" data-action="toggle-audio">播放语音</button>
+                </div>
+
+                <div class="gift" id="gift">
+                    <div class="gift-lid">
+                        <div class="lid-band"></div>
+                        <div class="bow bow-left"></div>
+                        <div class="bow bow-right"></div>
+                        <div class="bow-knot"></div>
+                    </div>
+                    <div class="gift-body">
+                        <div class="body-band-v"></div>
+                        <div class="body-band-h"></div>
+                    </div>
+                </div>
+                <div class="gift-shadow" id="giftShadow"></div>
+            </div>
+
+            <p class="panel-hint" id="panelHint">送给此刻的你</p>
+            <button class="again-btn" data-action="close-result">收好这份惊喜</button>
+        </div>
+    </div>
+
+    <input type="file" id="filePicker" hidden>
+    <div class="toast" id="toast" hidden></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
